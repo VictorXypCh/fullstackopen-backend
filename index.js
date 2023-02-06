@@ -3,10 +3,12 @@ const app = express();
 const { requestLogger } = require("./utils/middleware");
 const morgan = require("morgan");
 const cors = require("cors");
-
 app.use(express.json());
 app.use(cors());
-//app.use(requestLogger);
+
+const mongodb = require("./connect");
+
+mongodb.connect();
 
 morgan.token("body", function (req, res) {
   return JSON.stringify(req.body);

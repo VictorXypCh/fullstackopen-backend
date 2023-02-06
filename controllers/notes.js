@@ -1,4 +1,5 @@
 const route = require("express").Router();
+const Note = require('../models/Note');
 let notes = [
   {
     id: 1,
@@ -18,7 +19,13 @@ let notes = [
 ];
 
 route.get("/", (req, res) => {
-  res.json(notes);
+  Note.find({})
+    .then((notes) => {
+      res.json(notes);
+    })
+    .catch((err) => {
+      console.err(err);
+    });
 });
 route.get("/:id", (request, response) => {
   const id = Number(request.params.id);
