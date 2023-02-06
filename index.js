@@ -16,6 +16,7 @@ app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
 
+app.use(express.static("build"));
 app.use("/api/notes", require("./controllers/notes"));
 
 app.get("/", (req, res) => {
@@ -51,7 +52,7 @@ app.get("/info", (req, res) => {
   res.send(str);
 });
 
-app.get("/api/persons/", (req, res) => {
+app.get("/api/persons", (req, res) => {
   res.json(persons);
 });
 

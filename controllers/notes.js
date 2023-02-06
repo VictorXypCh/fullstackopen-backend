@@ -56,6 +56,34 @@ route.post("", (request, response) => {
 
   response.json(note);
 });
+
+route.put("/:id", (request, response) => {
+  const id = Number(request.params.id);
+  const body = request.body;
+  if (!id) {
+    return response.status(400).json({
+      error: "incorrect id",
+    });
+  }
+
+  if (!body.content) {
+    return response.status(400).json({
+      error: "content missing",
+    });
+  }
+
+  const note = notes.find((e) => e.id === id);
+
+  if (note) {
+    note.content = body.content;
+    note.important = body.important || false;
+    note.date = new Date();
+    return response.json(note);
+  } else {
+    return response.status(400).send("Not found");
+  }
+});
+
 route.delete("/:id", (request, response) => {
   const id = Number(request.params.id);
   notes = notes.filter((note) => note.id !== id);
