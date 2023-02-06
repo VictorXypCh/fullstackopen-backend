@@ -1,5 +1,5 @@
 const route = require("express").Router();
-const Note = require('../models/Note');
+const Note = require("../models/Note");
 let notes = [
   {
     id: 1,
@@ -28,68 +28,47 @@ route.get("/", (req, res) => {
     });
 });
 route.get("/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const note = notes.find((note) => note.id === id);
-
-  if (note) {
-    response.json(note);
-  } else {
-    response.status(404).end();
-  }
+  Note.findById(request.params.id)
+    .then((note) => {
+      if (note) {
+        response.json(note);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => next(error));
 });
-
-const generateId = () => {
-  const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0;
-  return maxId + 1;
-};
 
 route.post("", (request, response) => {
   const body = request.body;
 
-  if (!body.content) {
-    return response.status(400).json({
-      error: "content missing",
-    });
+  if (body.content === undefined) {
+    return response.status(400).json({ error: "content missing" });
   }
 
-  const note = {
+  const note = new Note({
     content: body.content,
     important: body.important || false,
-    date: new Date(),
-    id: generateId(),
-  };
+  });
 
-  notes = notes.concat(note);
-
-  response.json(note);
+  note.save().then((savedNote) => {
+    response.json(savedNote);
+  });
 });
 
 route.put("/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const body = request.body;
-  if (!id) {
-    return response.status(400).json({
-      error: "incorrect id",
-    });
+const body = request.body
+
+  const note = {
+    content: body.content,
+    important: body.important,
   }
 
-  if (!body.content) {
-    return response.status(400).json({
-      error: "content missing",
-    });
-  }
-
-  const note = notes.find((e) => e.id === id);
-
-  if (note) {
-    note.content = body.content;
-    note.important = body.important || false;
-    note.date = new Date();
-    return response.json(note);
-  } else {
-    return response.status(400).send("Not found");
-  }
-});
+  Note.findByIdAndUpdate(request.params.id, note, { new: true })
+    .then(updatedNote => {
+      response.json(updatedNote)
+    })
+    .catch(error => next(error))});
 
 route.delete("/:id", (request, response) => {
   const id = Number(request.params.id);
