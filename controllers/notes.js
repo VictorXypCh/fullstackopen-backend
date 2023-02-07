@@ -1,33 +1,14 @@
 const route = require("express").Router();
 const Note = require("../models/Note");
-let notes = [
-  {
-    id: 1,
-    content: "HTML is easy",
-    important: true,
-  },
-  {
-    id: 2,
-    content: "Browser can execute only JavaScript",
-    important: false,
-  },
-  {
-    id: 3,
-    content: "GET and POST are the most important methods of HTTP protocol",
-    important: true,
-  },
-];
 
 route.get("/", (req, res) => {
   Note.find({})
     .then((notes) => {
       res.json(notes);
     })
-    .catch((err) => {
-      console.err(err);
-    });
+    .catch((error) => next(error));
 });
-route.get("/:id", (request, response) => {
+route.get("/:id", (request, response, next) => {
   Note.findById(request.params.id)
     .then((note) => {
       if (note) {
@@ -39,7 +20,7 @@ route.get("/:id", (request, response) => {
     .catch((error) => next(error));
 });
 
-route.post("", (request, response) => {
+route.post("/", (request, response, next) => {
   const body = request.body;
 
   if (body.content === undefined) {
@@ -49,32 +30,38 @@ route.post("", (request, response) => {
   const note = new Note({
     content: body.content,
     important: body.important || false,
+    date: new Date(),
   });
 
-  note.save().then((savedNote) => {
-    response.json(savedNote);
-  });
+  note
+    .save()
+    .then((savedNote) => {
+      response.json(savedNote);
+    })
+    .catch((error) => next(error));
 });
 
-route.put("/:id", (request, response) => {
-const body = request.body
+route.put("/:id", (request, response, next) => {
+  const body = request.body;
 
   const note = {
     content: body.content,
     important: body.important,
-  }
+  };
 
   Note.findByIdAndUpdate(request.params.id, note, { new: true })
-    .then(updatedNote => {
-      response.json(updatedNote)
+    .then((updatedNote) => {
+      response.json(updatedNote);
     })
-    .catch(error => next(error))});
+    .catch((error) => next(error));
+});
 
-route.delete("/:id", (request, response) => {
-  const id = Number(request.params.id);
-  notes = notes.filter((note) => note.id !== id);
-
-  response.status(204).end();
+route.delete("/:id", (request, response, next) => {
+  Note.findByIdAndRemove(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
 });
 
 module.exports = route;
