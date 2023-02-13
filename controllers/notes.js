@@ -1,26 +1,14 @@
-const route = require("express").Router()
+const router = require("express").Router()
 const Note = require("../models/Note")
 
-route.get("/", (req, res) => {
+router.get("/", (req, res) => {
   Note.find({})
     .then((notes) => {
       res.json(notes)
     })
     .catch((error) => next(error))
 })
-route.get("/:id", (request, response, next) => {
-  Note.findById(request.params.id)
-    .then((note) => {
-      if (note) {
-        response.json(note)
-      } else {
-        response.status(404).end()
-      }
-    })
-    .catch((error) => next(error))
-})
-
-route.post("/", (request, response, next) => {
+router.post("/", async (request, response, next) => {
   const body = request.body
 
   if (body.content === undefined) {
@@ -33,15 +21,13 @@ route.post("/", (request, response, next) => {
     date: new Date(),
   })
 
-  note
-    .save()
-    .then((savedNote) => {
-      response.json(savedNote)
-    })
-    .catch((error) => next(error))
+
+
+    const savedNote = await note.save()
+    response.status(201).json(savedNote)
 })
 
-route.put("/:id", (request, response, next) => {
+router.put("/:id", (request, response, next) => {
   const body = request.body
 
   const note = {
@@ -56,12 +42,21 @@ route.put("/:id", (request, response, next) => {
     .catch((error) => next(error))
 })
 
-route.delete("/:id", (request, response, next) => {
-  Note.findByIdAndRemove(request.params.id)
-    .then((result) => {
-      response.status(204).end()
-    })
-    .catch((error) => next(error))
+router.get('/:id', async (request, response, next) => {
+  try {
+    const note = await Note.findById(request.params.id)
+    if (note) {
+      response.json(note)
+    } else {
+      response.status(404).end()
+    }
+  } catch (exception) {
+    next(exception)
+  }
 })
 
-module.exports = route
+router.delete('/:id', async (request, response, next) => {
+    await Note.findByIdAndRemove(request.params.id)
+    response.status(204).end()
+})
+module.exports = router
