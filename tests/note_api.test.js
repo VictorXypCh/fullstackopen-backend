@@ -11,17 +11,17 @@ test("notes are returned as json", async () => {
     .expect("Content-Type", /application\/json/);
 }, 100000);
 
-test('there are two notes', async () => {
-  const response = await api.get('/api/notes')
+test("there are two notes", async () => {
+  const response = await api.get("/api/notes");
 
-  expect(response.body).toHaveLength(2)
-})
+  expect(response.body).toHaveLength(2);
+});
 
-test('the first note is about HTTP methods', async () => {
-  const response = await api.get('/api/notes')
+test("the first note is about HTTP methods", async () => {
+  const response = await api.get("/api/notes");
 
-  expect(response.body[0].content).toBe('HTML is easy')
-})
+  expect(response.body[0].content).toBe("HTML is easy");
+});
 
 afterAll(async () => {
   await mongoose.connection.close();
