@@ -24,6 +24,7 @@ app.use(
 
 app.use(express.static("build"));
 app.use("/api/notes", require("./controllers/notes"));
+app.use("/api/blogs", require("./controllers/blogs"));
 app.use("/api/persons", require("./controllers/persons"));
 
 app.get("/", (req, res) => {

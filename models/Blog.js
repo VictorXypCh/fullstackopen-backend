@@ -14,5 +14,5 @@ schema.set("toJSON", {
   },
 })
 
-module.exports = mongoose.model("Note", schema)
+module.exports = mongoose.model("Blog", schema)
 
