@@ -26,6 +26,7 @@ app.use(express.static("build"));
 app.use("/api/notes", require("./controllers/notes"));
 app.use("/api/blogs", require("./controllers/blogs"));
 app.use("/api/persons", require("./controllers/persons"));
+app.use("/api/users", require("./controllers/users"));
 
 app.get("/", (req, res) => {
   res.send("hello world");
