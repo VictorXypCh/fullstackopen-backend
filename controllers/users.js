@@ -1,9 +1,9 @@
 const bcrypt = require("bcrypt");
 const router = require("express").Router();
-const User = require("../models/user");
+const User = require("../models/User");
 
 router.get("/", async (request, response) => {
-  const result = await User.find({});
+  const result = await User.find({}).populate('notes', {content:1, important: 1});
   response.json(result);
 });
 router.post("/", async (request, response) => {
