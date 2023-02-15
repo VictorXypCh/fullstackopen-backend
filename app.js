@@ -1,5 +1,5 @@
 const express = require("express");
-require('express-async-errors')
+require("express-async-errors");
 const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
@@ -27,6 +27,7 @@ app.use("/api/notes", require("./controllers/notes"));
 app.use("/api/blogs", require("./controllers/blogs"));
 app.use("/api/persons", require("./controllers/persons"));
 app.use("/api/users", require("./controllers/users"));
+app.use("/api/login", require("./controllers/login"));
 
 app.get("/", (req, res) => {
   res.send("hello world");
@@ -34,6 +35,5 @@ app.get("/", (req, res) => {
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
-
 
 module.exports = app;
